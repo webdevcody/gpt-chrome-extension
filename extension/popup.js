@@ -1,7 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
   const btnAction = document.getElementById("btnAction");
-  btnAction.addEventListener("click", function () {
-    parsePageContent();
+  btnAction.addEventListener("click", async function () {
+    const text = parsePageContent();
+    const response = await summarizeText(text);
+    console.log("Response:", response);
   });
 });
 
@@ -33,28 +35,27 @@ function parsePageContent() {
 
         const pageContent = results[0].result;
         console.log("Page content:", pageContent);
+
+        return pageContent;
       }
     );
   });
 }
 
-function getThing() {
+async function summarizeText(text) {
+  console.log("Summarizing text:", text)
   // Send an HTTP request to the specified URL
-  return fetch("http://localhost:8080/something")
-    .then(function (response) {
-      // Handle the response if it was successful
-      if (response.ok) {
-        return response.text(); // Parse the response body as text
-      }
-      // Handle the error if the response was not successful
-      throw new Error("Network response was not ok.");
-    })
-    .then(function (data) {
-      // Handle the parsed response data
-      console.log(data);
-    })
-    .catch(function (error) {
-      // Handle any errors that occurred during the request
-      console.error("Error fetching data:", error);
+  try {
+    const response = await fetch("http://localhost:8080/text-completion", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ prompt: text }),
     });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
 }
