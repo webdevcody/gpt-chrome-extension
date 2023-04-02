@@ -1,10 +1,7 @@
-console.log("Content script loaded");
-
 document.addEventListener("DOMContentLoaded", function () {
   const btnAction = document.getElementById("btnAction");
   btnAction.addEventListener("click", function () {
-    const pageContent = parsePageContent();
-    console.log("Page content:", pageContent);
+    parsePageContent();
   });
 });
 
@@ -18,20 +15,24 @@ function parsePageContent() {
       {
         target: { tabId: tabId },
         function: () => {
-          return document.querySelectorAll("p");
+          const paragraphs = document.querySelectorAll("p");
+          let textContent = "";
+
+          paragraphs.forEach((paragraph) => {
+            textContent += " " + paragraph.innerText;
+          });
+
+          return textContent;
         },
       },
       (results) => {
-        console.log("results", results);
-        var paragraphs = results;
+        if (chrome.runtime.lastError) {
+          console.error(JSON.stringify(chrome.runtime.lastError));
+          return;
+        }
 
-        let textContent = "";
-
-        paragraphs.forEach((paragraph) => {
-          textContent += " " + paragraph.innerText;
-        });
-
-        return textContent;
+        const pageContent = results[0].result;
+        console.log("Page content:", pageContent);
       }
     );
   });
