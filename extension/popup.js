@@ -37,3 +37,24 @@ function parsePageContent() {
     );
   });
 }
+
+function getThing() {
+  // Send an HTTP request to the specified URL
+  return fetch("http://localhost:8080/something")
+    .then(function (response) {
+      // Handle the response if it was successful
+      if (response.ok) {
+        return response.text(); // Parse the response body as text
+      }
+      // Handle the error if the response was not successful
+      throw new Error("Network response was not ok.");
+    })
+    .then(function (data) {
+      // Handle the parsed response data
+      console.log(data);
+    })
+    .catch(function (error) {
+      // Handle any errors that occurred during the request
+      console.error("Error fetching data:", error);
+    });
+}
